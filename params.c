@@ -6,13 +6,13 @@
 /*   By: ihuang <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/02 14:12:44 by ihuang            #+#    #+#             */
-/*   Updated: 2018/10/02 15:59:13 by ihuang           ###   ########.fr       */
+/*   Updated: 2018/10/07 14:35:52 by ihuang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "b_ls.h"
 
-t_params	*create_params(void)
+t_params	*initiate_params(void)
 {
 	t_params		*p;
 
@@ -21,11 +21,12 @@ t_params	*create_params(void)
 	p->aflag = 0;
 	p->tflag = 0;
 	p->rflag = 0;
+	p->fflag = 0;
 	p->count = 0;
 	return (p);
 }
 
-char		get_flags(char **av, t_params **pp)
+char		get_params(char **av, t_params **pp)
 {
 	int				j;
 	int				i;
@@ -38,18 +39,41 @@ char		get_flags(char **av, t_params **pp)
 		j = 0;
 		while (av[i][++j])
 		{
-			if (av[i][j] == 'l')
-				(*pp)->lflag = 1;
-			else if (av[i][j] == 'a')
-				(*pp)->aflag = 1;
-			else if (av[i][j] == 't')
-				(*pp)->tflag = 1;
-			else if (av[i][j] == 'r')
-				(*pp)->rflag = 1;
+			if (ft_strchr("latrf", av[i][j]))
+				add_param(av[i][j], *pp);
 			else
 				return (av[i][j]);
 		}
 		(*pp)->count++;
 	}
 	return (0);
+}
+
+char		*ft_strchr(const char *s, char c)
+{
+	while (*s)
+	{
+		if (*s == c)
+			return ((char*)s);
+		s++;
+	}
+	if (*s == c)
+		return ((char*)s);
+	return (NULL);
+}
+
+void		add_param(char c, t_params *p)
+{
+	if (c == 'l')
+		p->lflag = 1;
+	else if (c == 'a')
+		p->aflag = 1;
+	else if (c == 't')
+		p->tflag = 1;
+	else if (c == 'r')
+		p->rflag = 1;
+	else if (c == 'f')
+		p->fflag = 1;
+	else
+		return ;
 }

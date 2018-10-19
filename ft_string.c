@@ -6,7 +6,7 @@
 /*   By: ihuang <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/02 13:27:10 by ihuang            #+#    #+#             */
-/*   Updated: 2018/10/04 11:51:47 by ihuang           ###   ########.fr       */
+/*   Updated: 2018/10/07 14:34:32 by ihuang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,26 +39,21 @@ int		ft_strcmp(const char *s1, const char *s2)
 
 char	*ft_strcpy(char *dst, const char *src)
 {
-	unsigned int	i;
+	char			*head;
 
-	i = 0;
-	while (src[i])
-	{
-		dst[i] = src[i];
-		i++;
-	}
-	dst[i] = '\0';
-	return (dst);
+	head = dst;
+	while (*src)
+		*dst++ = *src++;
+	*dst = '\0';
+	return (head);
 }
 
 char	*ft_strcat(char *s1, const char *s2)
 {
 	size_t			s1_len;
-	size_t			s2_len;
 	char			*p;
 
 	s1_len = ft_strlen(s1);
-	s2_len = ft_strlen(s2);
 	p = s1 + s1_len;
 	while (*s2)
 		*p++ = *s2++;
@@ -69,18 +64,14 @@ char	*ft_strcat(char *s1, const char *s2)
 char	*ft_strdup(const char *s1)
 {
 	char		*str2;
-	size_t		i;
 	size_t		n;
 
 	n = ft_strlen(s1);
 	if (!(str2 = (char *)malloc(sizeof(char) * (n + 1))))
 		return (NULL);
-	i = 0;
-	while (i < n)
-	{
-		str2[i] = s1[i];
-		i++;
-	}
-	str2[i] = '\0';
-	return ((char *)str2);
+	while (*s1)
+		*str2++ = *s1++;
+	*str2 = '\0';
+	str2 -= n;
+	return (str2);
 }

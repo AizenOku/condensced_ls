@@ -6,34 +6,28 @@
 /*   By: ihuang <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/02 13:47:53 by ihuang            #+#    #+#             */
-/*   Updated: 2018/10/02 13:57:19 by ihuang           ###   ########.fr       */
+/*   Updated: 2018/10/07 15:17:11 by ihuang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "b_ls.h"
 
-size_t		ll_len(t_ll *head, char dir)
+t_ll		*compare_time(t_ll *ptr, t_ll *most)
 {
-	size_t			len;
+	t_ll			*ret;
 
-	len = 0;
-	if (dir == 'b')
+	if (ptr->ent->mtimespec.tv_sec > most->ent->mtimespec.tv_sec)
+		ret = ptr;
+	else if (ptr->ent->mtimespec.tv_sec < most->ent->mtimespec.tv_sec)
+		ret = most;
+	else
 	{
-		while (head)
-		{
-			len++;
-			head = head->bottom;
-		}
+		if (ptr->ent->mtimespec.tv_nsec > most->ent->mtimespec.tv_nsec)
+			ret = ptr;
+		else
+			ret = most;
 	}
-	else if (dir == 'n')
-	{
-		while (head)
-		{
-			len++;
-			head = head->next;
-		}
-	}
-	return (len);
+	return (ret);
 }
 
 void		swap_llentries(t_ll *ptr1, t_ll *ptr2)
@@ -47,7 +41,7 @@ void		swap_llentries(t_ll *ptr1, t_ll *ptr2)
 	ptr2->ent = temp;
 }
 
-void		reverse_ll(t_ll **head, char dir)
+void		reverse_ll(t_ll **head)
 {
 	t_ll			*curr;
 	t_ll			*next;
@@ -55,70 +49,36 @@ void		reverse_ll(t_ll **head, char dir)
 
 	curr = *head;
 	prev = NULL;
+	next = NULL;
+	if (!*head)
+		return ;
 	while (curr)
 	{
-		if (dir == 'b')
-		{
-			next = curr->bottom;
-			curr->bottom = prev;
-		}
-		else
-		{
-			next = curr->next;
-			curr->next = prev;
-		}
+		next = curr->next;
+		curr->next = prev;
 		prev = curr;
 		curr = next;
 	}
 	*head = prev;
 }
 
-t_ll		*sort_updown(t_ll *head, t_params *p)
+t_ll		*sort_ll(t_ll *head, t_params *p)
 {
 	t_ll			*start;
 	t_ll			*ptr;
 	t_ll			*most;
 
-	start = head;
-	while (start->bottom)
-	{
-		most = start;
-		ptr = start->bottom;
-		while (ptr)
-		{
-			if (p->tflag)
-			{
-				if (ptr->ent->mtime > most->ent->mtime)
-					most = ptr;
-			}
-			else if (ft_strcmp(ptr->ent->name, most->ent->name) < 0)
-				most = ptr;
-			ptr = ptr->bottom;
-		}
-		swap_llentries(start, most);
-		start = start->bottom;
-	}
-	return (head);
-}
-
-t_ll		*sort_leftright(t_ll *head, t_params *p)
-{
-	t_ll			*start;
-	t_ll			*ptr;
-	t_ll			*most;
-
+	if (head == NULL)
+		return (NULL);
 	start = head;
 	while (start->next)
 	{
 		most = start;
-		ptr = start->next;
+		ptr = start;
 		while (ptr)
 		{
 			if (p->tflag)
-			{
-				if (ptr->ent->mtime > most->ent->mtime)
-					most = ptr;
-			}
+				most = compare_time(ptr, most);
 			else if (ft_strcmp(ptr->ent->name, most->ent->name) < 0)
 				most = ptr;
 			ptr = ptr->next;
@@ -126,5 +86,7 @@ t_ll		*sort_leftright(t_ll *head, t_params *p)
 		swap_llentries(start, most);
 		start = start->next;
 	}
+	if (p->rflag)
+		reverse_ll(&head);
 	return (head);
 }

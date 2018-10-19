@@ -6,7 +6,7 @@
 /*   By: ihuang <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/02 13:39:41 by ihuang            #+#    #+#             */
-/*   Updated: 2018/10/02 14:13:40 by ihuang           ###   ########.fr       */
+/*   Updated: 2018/10/07 15:04:53 by ihuang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,33 +19,21 @@ t_ll	*create_element(t_entry *ent)
 	list = (t_ll*)malloc(sizeof(*list));
 	list->ent = ent;
 	list->next = NULL;
-	list->bottom = NULL;
 	return (list);
 }
 
-t_ll	*append(t_ll *head, t_entry *ent, char dir)
+t_ll	*append(t_ll *head, t_entry *ent)
 {
-	t_ll	*new;
+	t_ll	*temp;
 	t_ll	*p;
 
-	new = create_element(ent);
+	temp = create_element(ent);
 	if (head == NULL)
-		return (new);
+		return (temp);
 	p = head;
-	if (dir == 'b')
-	{
-		while (p->bottom)
-			p = p->bottom;
-		p->bottom = new;
-	}
-	else if (dir == 'n')
-	{
-		while (p->next)
-			p = p->next;
-		p->next = new;
-	}
-	else
-		return (NULL);
+	while (p->next)
+		p = p->next;
+	p->next = temp;
 	return (head);
 }
 
@@ -67,7 +55,7 @@ t_ll	*mk_ll_underdir(t_ll *dir)
 			if ((ent = mkent(ft_strcat(path, direntp->d_name))) != NULL)
 			{
 				ent->name = ft_strdup(direntp->d_name);
-				ll_under = append(ll_under, ent, 'b');
+				ll_under = append(ll_under, ent);
 			}
 			free(path);
 		}
@@ -76,4 +64,20 @@ t_ll	*mk_ll_underdir(t_ll *dir)
 	}
 	perror(dir->ent->name);
 	return (NULL);
+}
+
+void	free_ll(t_ll **head)
+{
+	t_ll			*temp;
+
+	if (*head == NULL)
+		return ;
+	while (*head)
+	{
+		temp = (*head)->next;
+		(*head)->next = NULL;
+		free((*head)->ent);
+		free(*head);
+		*head = temp;
+	}
 }
